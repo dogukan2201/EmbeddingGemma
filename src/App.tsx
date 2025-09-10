@@ -5,44 +5,44 @@ import "./App.css";
 const DOCS = [
   {
     id: "d1",
-    text: "Mars kırmızımsı yüzeyiyle bilinir ve 'Kızıl Gezegen' olarak anılır.",
+    text: "Mars is known for its reddish surface and is referred to as the 'Red Planet'.",
   },
   {
     id: "d2",
-    text: "Jüpiter Güneş sistemindeki en büyük gezegendir ve Büyük Kırmızı Leke'ye sahiptir.",
+    text: "Jupiter is the largest planet in the Solar System and has the Great Red Spot.",
   },
   {
     id: "d3",
-    text: "Satürn'ün en dikkat çekici özelliği, onu çevreleyen geniş halkalarıdır.",
+    text: "Saturn's most striking feature is its vast rings that surround it.",
   },
   {
     id: "d4",
-    text: "Venüs, Dünya ile benzer boyutlara sahip olup yoğun atmosferiyle bilinir.",
+    text: "Venus is similar in size to Earth and is known for its dense atmosphere.",
   },
   {
     id: "d5",
-    text: "Merkür Güneş'e en yakın gezegendir ve sıcaklık değişimleri oldukça fazladır.",
+    text: "Mercury is the closest planet to the Sun and experiences extreme temperature variations.",
   },
   {
     id: "d6",
     text: "Mars is often called the Red Planet due to its reddish appearance.",
-  }, // EN duplicate
+  },
   {
     id: "d7",
-    text: "Mars yüzeyinde Olympus Mons adında devasa bir yanardağ bulunur.",
-  }, // related fact
+    text: "There is a massive volcano called Olympus Mons on the surface of Mars.",
+  },
   {
     id: "d8",
     text: "The largest volcano in the solar system, Olympus Mons, is located on Mars.",
-  }, // EN paraphrase
+  },
   {
     id: "d9",
-    text: "Uranüs ve Neptün, genellikle buz devleri olarak adlandırılır.",
-  }, // distractor
+    text: "Uranus and Neptune are commonly referred to as ice giants.",
+  },
   {
     id: "d10",
-    text: "Jüpiter'in uydusu Europa, buzlu yüzeyinin altında okyanus barındırıyor olabilir.",
-  }, // tricky
+    text: "Jupiter's moon Europa may harbor an ocean beneath its icy surface.",
+  },
 ];
 
 const App = () => {
@@ -79,7 +79,7 @@ const App = () => {
         : documents;
 
       console.log(
-        "Model için localStorage'dan alınan dokümanlar:",
+        "Documents retrieved from localStorage for the model:",
         documentsToUse
       );
       await runEmbeddingQuery(query, documentsToUse);
@@ -92,16 +92,16 @@ const App = () => {
     if (newDocument.trim()) {
       const updatedDocuments = [...documents, newDocument.trim()];
 
-      // State'i güncelle
+      // Update state
       setDocuments(updatedDocuments);
 
-      // LocalStorage'ı doğrudan güncelle
+      // Update localStorage directly
       localStorage.setItem(
         "embedding_documents",
         JSON.stringify(updatedDocuments)
       );
       console.log(
-        "Yeni doküman eklendi ve localStorage güncellendi:",
+        "New document added and localStorage updated:",
         updatedDocuments
       );
 
@@ -112,24 +112,21 @@ const App = () => {
   const handleRemoveDocument = (index: number) => {
     const updatedDocuments = documents.filter((_, i) => i !== index);
 
-    // State'i güncelle
+    // Update state
     setDocuments(updatedDocuments);
 
-    // LocalStorage'ı doğrudan güncelle
+    // Update localStorage directly
     localStorage.setItem(
       "embedding_documents",
       JSON.stringify(updatedDocuments)
     );
-    console.log(
-      "Doküman silindi ve localStorage güncellendi:",
-      updatedDocuments
-    );
+    console.log("Document deleted and localStorage updated:", updatedDocuments);
   };
 
   // Dokümanlar değiştiğinde localStorage'a kaydet
   useEffect(() => {
     localStorage.setItem("embedding_documents", JSON.stringify(documents));
-    console.log("Dokümanlar localStorage'a kaydedildi:", documents);
+    console.log("Documents saved to localStorage:", documents);
   }, [documents]);
 
   return (
