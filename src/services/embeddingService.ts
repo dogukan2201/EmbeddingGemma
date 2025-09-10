@@ -1,6 +1,6 @@
 import { AutoModel, AutoTokenizer, matmul } from "@huggingface/transformers";
 
-// Retry mechanism with exponential backoff
+
 const retryWithBackoff = async (fn: () => Promise<any>, maxRetries: number = 3, baseDelay: number = 1000): Promise<any> => {
   for (let i = 0; i < maxRetries; i++) {
     try {
@@ -19,7 +19,6 @@ const retryWithBackoff = async (fn: () => Promise<any>, maxRetries: number = 3, 
   }
 };
 
-// Model loading with fallback options
 const loadModelWithFallback = async (modelId: string) => {
   const options = [
     { dtype: "q8" as const, device: "wasm" as const },
@@ -54,7 +53,8 @@ const loadModelWithFallback = async (modelId: string) => {
   throw new Error("No model configuration worked");
 };
 
-// Types
+
+
 export interface EmbeddingResult {
   similarities: number[];
   ranking: Array<{ index: number; score: number; text: string; }>;
@@ -67,7 +67,7 @@ export interface EmbeddingServiceState {
   error: string | null;
 }
 
-// Embedding Service State
+
 let serviceState: EmbeddingServiceState = {
   isLoading: false,
   isInitialized: false,
@@ -79,7 +79,7 @@ let model: any = null;
 
 const MODEL_ID = "onnx-community/embeddinggemma-300m-ONNX";
 
-// Initialize the embedding model
+
 export const initializeEmbeddingModel = async (): Promise<void> => {
   if (serviceState.isInitialized) {
     return;
@@ -95,17 +95,17 @@ export const initializeEmbeddingModel = async (): Promise<void> => {
     
     serviceState.isInitialized = true;
     serviceState.isLoading = false;
-    console.log("✅ Embedding model loaded successfully!");
+    console.log("Embedding model loaded successfully!");
     
   } catch (error: any) {
     serviceState.error = error.message;
     serviceState.isLoading = false;
-    console.error("❌ Model loading error:", error);
+    console.error("Model loading error:", error);
     throw error;
   }
 };
 
-// Main embedding function
+
 export const runEmbedding = async (
   query: string, 
   documents: string[]
@@ -165,12 +165,11 @@ export const runEmbedding = async (
   }
 };
 
-// Get current service state
+
 export const getServiceState = (): EmbeddingServiceState => {
   return { ...serviceState };
 };
 
-// Reset service (useful for reinitializing)
 export const resetEmbeddingService = (): void => {
   serviceState = {
     isLoading: false,

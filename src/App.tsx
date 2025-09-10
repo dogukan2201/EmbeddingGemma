@@ -131,7 +131,7 @@ const App = () => {
 
   return (
     <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-      <h1>🔍 Embedding Gemma - Semantic Search</h1>
+      <h1>Embedding Gemma</h1>
 
       {/* Model Status */}
       <div
@@ -153,9 +153,9 @@ const App = () => {
         }}
       >
         <strong>Model Status: </strong>
-        {isModelLoading && "⏳ Loading model..."}
-        {isModelReady && "✅ Model ready"}
-        {modelError && `❌ Error: ${modelError}`}
+        {isModelLoading && "Loading model..."}
+        {isModelReady && "Model ready"}
+        {modelError && `Error: ${modelError}`}
       </div>
 
       {/* Show loading message when model is loading */}
@@ -179,180 +179,259 @@ const App = () => {
       {/* Hide all other content when model is loading */}
       {!isModelLoading && (
         <>
-          {/* Query Input */}
+          {/* Query Input and Run Button */}
           <div style={{ marginBottom: "20px" }}>
             <h3>Search Query</h3>
-            <textarea
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter your search query here..."
-              style={{ width: "100%", height: "60px", padding: "10px" }}
-            />
-          </div>
-
-          {/* Documents Management */}
-          <div style={{ marginBottom: "20px" }}>
-            <h3>Documents ({documents.length})</h3>
-
-            {/* Add new document */}
-            <div style={{ marginBottom: "10px", display: "flex", gap: "10px" }}>
+            <div
+              style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}
+            >
               <textarea
-                value={newDocument}
-                onChange={(e) => setNewDocument(e.target.value)}
-                placeholder="Add new document..."
-                style={{ flex: 1, height: "40px", padding: "10px" }}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Enter your search query here..."
+                style={{
+                  flex: 1,
+                  height: "60px",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ddd",
+                }}
               />
-              <button
-                onClick={handleAddDocument}
-                disabled={!newDocument.trim()}
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "5px" }}
               >
-                Add
-              </button>
-            </div>
-
-            {/* Document list */}
-            <div style={{ display: "grid", gap: "10px" }}>
-              {documents.map((doc, index) => (
-                <div
-                  key={index}
+                <button
+                  onClick={handleRunEmbedding}
+                  disabled={
+                    !isModelReady || isProcessing || documents.length === 0
+                  }
                   style={{
-                    padding: "10px",
-                    border: "1px solid #ddd",
+                    padding: "10px 20px",
+                    fontSize: "16px",
+                    backgroundColor:
+                      isModelReady && !isProcessing ? "#007bff" : "#6c757d",
+                    color: "white",
+                    border: "none",
                     borderRadius: "5px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    cursor:
+                      isModelReady && !isProcessing ? "pointer" : "not-allowed",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  <span style={{ flex: 1 }}>{doc}</span>
+                  {isProcessing ? "⏳ Processing..." : "Run Embedding"}
+                </button>
+                {results && (
                   <button
-                    onClick={() => handleRemoveDocument(index)}
-                    style={{ marginLeft: "10px", color: "red" }}
+                    onClick={clearResults}
+                    style={{
+                      padding: "10px 20px",
+                      fontSize: "16px",
+                      backgroundColor: "#6c757d",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
                   >
-                    Remove
+                    Clear Results
                   </button>
-                </div>
-              ))}
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Run Embedding Button */}
-          <div style={{ marginBottom: "20px" }}>
-            <button
-              onClick={handleRunEmbedding}
-              disabled={!isModelReady || isProcessing || documents.length === 0}
-              style={{
-                padding: "10px 20px",
-                fontSize: "16px",
-                backgroundColor:
-                  isModelReady && !isProcessing ? "#007bff" : "#6c757d",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor:
-                  isModelReady && !isProcessing ? "pointer" : "not-allowed",
-              }}
-            >
-              {isProcessing ? "⏳ Processing..." : "🚀 Run Embedding"}
-            </button>
+          {/* Documents and Results Grid Layout */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "20px",
+              marginBottom: "20px",
+            }}
+          >
+            {/* Documents Management */}
+            <div>
+              <h3>Documents ({documents.length})</h3>
 
-            {results && (
-              <button
-                onClick={clearResults}
-                style={{
-                  marginLeft: "10px",
-                  padding: "10px 20px",
-                  fontSize: "16px",
-                  backgroundColor: "#6c757d",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Clear Results
-              </button>
-            )}
-          </div>
-
-          {/* Results Display */}
-          {results && (
-            <div style={{ marginTop: "20px" }}>
-              <h3>🎯 Results</h3>
-
+              {/* Add new document */}
               <div
-                style={{
-                  marginBottom: "15px",
-                  padding: "10px",
-                  backgroundColor: "#3c4043",
-                  color: "white",
-                  borderRadius: "5px",
-                }}
+                style={{ marginBottom: "10px", display: "flex", gap: "10px" }}
               >
-                <strong>Query:</strong> {results.query}
+                <textarea
+                  value={newDocument}
+                  onChange={(e) => setNewDocument(e.target.value)}
+                  placeholder="Add new document..."
+                  style={{ flex: 1, height: "40px", padding: "10px" }}
+                />
+                <button
+                  onClick={handleAddDocument}
+                  disabled={!newDocument.trim()}
+                >
+                  Add
+                </button>
               </div>
 
-              <h4>Most Relevant Documents:</h4>
-              <div style={{ display: "grid", gap: "10px" }}>
-                {results.ranking.map((item, rank) => (
+              {/* Document list */}
+              <div
+                style={{
+                  display: "grid",
+                  gap: "10px",
+                  maxHeight: "600px",
+                  overflowY: "auto",
+                }}
+              >
+                {documents.map((doc, index) => (
                   <div
-                    key={item.index}
+                    key={index}
                     style={{
-                      padding: "15px",
-                      border: "1px solid #444",
+                      padding: "10px",
+                      border: "1px solid #ddd",
                       borderRadius: "5px",
-                      backgroundColor:
-                        rank === 0
-                          ? "#2c3e50"
-                          : rank === 1
-                          ? "#34495e"
-                          : "#3c4043",
-                      color: "white",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "10px",
-                      }}
+                    <span style={{ flex: 1 }}>{doc}</span>
+                    <button
+                      onClick={() => handleRemoveDocument(index)}
+                      style={{ marginLeft: "10px", color: "red" }}
                     >
-                      <strong style={{ color: "white" }}>#{rank + 1}</strong>
-                      <span
-                        style={{
-                          padding: "4px 8px",
-                          backgroundColor: "#007bff",
-                          color: "white",
-                          borderRadius: "3px",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Score: {item.score.toFixed(4)}
-                      </span>
-                    </div>
-                    <p style={{ margin: 0, color: "white" }}>{item.text}</p>
+                      Remove
+                    </button>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <details style={{ marginTop: "15px" }}>
-                <summary style={{ cursor: "pointer", fontWeight: "bold" }}>
-                  Raw Similarity Scores
-                </summary>
-                <pre
+            {/* Results Display */}
+            <div>
+              {isProcessing ? (
+                <div
                   style={{
+                    textAlign: "center",
+                    padding: "40px",
                     backgroundColor: "#f8f9fa",
-                    padding: "10px",
-                    borderRadius: "5px",
-                    overflow: "auto",
+                    borderRadius: "8px",
+                    border: "1px solid #dee2e6",
                   }}
                 >
-                  {JSON.stringify(results.similarities, null, 2)}
-                </pre>
-              </details>
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      margin: "0 auto 20px",
+                      border: "3px solid #f3f3f3",
+                      borderTop: "3px solid #007bff",
+                      borderRadius: "50%",
+                      animation: "spin 1s linear infinite",
+                    }}
+                  >
+                    <style>
+                      {`
+                        @keyframes spin {
+                          0% { transform: rotate(0deg); }
+                          100% { transform: rotate(360deg); }
+                        }
+                      `}
+                    </style>
+                  </div>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "18px",
+                      color: "#6c757d",
+                    }}
+                  >
+                    Searching for relevant documents...
+                  </p>
+                </div>
+              ) : results ? (
+                <>
+                  <h3>Results</h3>
+                  <div
+                    style={{
+                      marginBottom: "15px",
+                      padding: "10px",
+                      backgroundColor: "#3c4043",
+                      color: "white",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    <strong>Query:</strong> {results.query}
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gap: "10px",
+                      maxHeight: "600px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {results.ranking.map((item, rank) => (
+                      <div
+                        key={item.index}
+                        style={{
+                          padding: "15px",
+                          border: "1px solid #444",
+                          borderRadius: "5px",
+                          backgroundColor:
+                            rank === 0
+                              ? "#2c3e50"
+                              : rank === 1
+                              ? "#34495e"
+                              : "#3c4043",
+                          color: "white",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "10px",
+                          }}
+                        >
+                          <strong style={{ color: "white" }}>
+                            #{rank + 1}
+                          </strong>
+                          <span
+                            style={{
+                              padding: "4px 8px",
+                              backgroundColor: "#007bff",
+                              color: "white",
+                              borderRadius: "3px",
+                              fontSize: "14px",
+                            }}
+                          >
+                            Score: {item.score.toFixed(4)}
+                          </span>
+                        </div>
+                        <p style={{ margin: 0, color: "white" }}>{item.text}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <details style={{ marginTop: "15px" }}>
+                    <summary style={{ cursor: "pointer", fontWeight: "bold" }}>
+                      Raw Similarity Scores
+                    </summary>
+                    <pre
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        overflow: "auto",
+                      }}
+                    >
+                      {JSON.stringify(results.similarities, null, 2)}
+                    </pre>
+                  </details>
+                </>
+              ) : null}
             </div>
-          )}
+          </div>
         </>
       )}
     </div>

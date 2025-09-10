@@ -11,12 +11,12 @@ export const useEmbedding = () => {
   const [results, setResults] = useState<EmbeddingResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Initialize model when hook is first used
+
   useEffect(() => {
     const initModel = async () => {
       if (!serviceState.isInitialized && !serviceState.isLoading) {
         console.log('Starting model initialization...');
-        setServiceState(getServiceState()); // Update loading state
+        setServiceState(getServiceState()); 
         
         try {
           await initializeEmbeddingModel();
@@ -30,9 +30,9 @@ export const useEmbedding = () => {
     };
 
     initModel();
-  }, []); // Run only once on mount
+  }, []); 
 
-  // Update service state when it changes
+
   useEffect(() => {
     const interval = setInterval(() => {
       const currentState = getServiceState();
@@ -48,7 +48,7 @@ export const useEmbedding = () => {
     return () => clearInterval(interval);
   }, [serviceState]);
 
-  // Function to run embedding
+
   const runEmbeddingQuery = useCallback(async (query: string, documents: string[]) => {
     if (!serviceState.isInitialized) {
       throw new Error('Model not loaded yet');
@@ -67,24 +67,24 @@ export const useEmbedding = () => {
     }
   }, [serviceState.isInitialized]);
 
-  // Function to clear results
+
   const clearResults = useCallback(() => {
     setResults(null);
   }, []);
 
   return {
-    // Service state
+
     isModelLoading: serviceState.isLoading,
     isModelReady: serviceState.isInitialized,
     modelError: serviceState.error,
     
-    // Processing state
+
     isProcessing,
     
-    // Results
+
     results,
     
-    // Actions
+
     runEmbeddingQuery,
     clearResults
   };
